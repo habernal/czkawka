@@ -368,13 +368,13 @@ fn generate_cache_for_results(vector_with_path: Vec<(String, String, gtk::TreePa
         let big_path = get_image_path_temporary("roman", 1, "jpg");
         let _ = big_thumbnail.save(&big_path);
         let big_img = gtk::Image::new();
-        big_img.set_from_file(big_path);
+        big_img.set_from_file(Some(big_path));
 
         let small_thumbnail = resize_dynamic_image_dimension(big_thumbnail, (SMALL_PREVIEW_SIZE, SMALL_PREVIEW_SIZE), &FilterType::Triangle);
         let small_path = get_image_path_temporary("roman", 1, "jpg");
         let _ = small_thumbnail.save(&small_path);
         let small_img = gtk::Image::new();
-        small_img.set_from_file(small_path);
+        small_img.set_from_file(Some(small_path));
 
         cache_all_images.push((full_path, name, big_img, small_img, tree_path));
     }
@@ -383,39 +383,39 @@ fn generate_cache_for_results(vector_with_path: Vec<(String, String, gtk::TreePa
 
 /// Takes info about current items in groups like path
 fn get_all_path(model: &TreeModel, current_iter: &TreeIter, column_color: i32, column_path: i32, column_name: i32) -> Vec<(String, String, gtk::TreePath)> {
-    let used_iter = current_iter.clone();
+    let used_iter = current_iter;
 
-    assert_eq!(model.value(&used_iter, column_color).get::<String>().unwrap(), HEADER_ROW_COLOR);
-    let using_reference = !model.value(&used_iter, column_path).get::<String>().unwrap().is_empty();
+    assert_eq!(model.value(used_iter, column_color).get::<String>().unwrap(), HEADER_ROW_COLOR);
+    let using_reference = !model.value(used_iter, column_path).get::<String>().unwrap().is_empty();
 
     let mut returned_vector = Vec::new();
 
     if using_reference {
-        let name = model.value(&used_iter, column_name).get::<String>().unwrap();
-        let path = model.value(&used_iter, column_path).get::<String>().unwrap();
+        let name = model.value(used_iter, column_name).get::<String>().unwrap();
+        let path = model.value(used_iter, column_path).get::<String>().unwrap();
 
         let full_name = get_full_name_from_path_name(&path, &name);
 
-        returned_vector.push((full_name, name, model.path(&used_iter).unwrap()));
+        returned_vector.push((full_name, name, model.path(used_iter).unwrap()));
     }
 
-    if !model.iter_next(&used_iter) {
+    if !model.iter_next(used_iter) {
         panic!("Found only header!");
     }
 
     loop {
-        let name = model.value(&used_iter, column_name).get::<String>().unwrap();
-        let path = model.value(&used_iter, column_path).get::<String>().unwrap();
+        let name = model.value(used_iter, column_name).get::<String>().unwrap();
+        let path = model.value(used_iter, column_path).get::<String>().unwrap();
 
         let full_name = get_full_name_from_path_name(&path, &name);
 
-        returned_vector.push((full_name, name, model.path(&used_iter).unwrap()));
+        returned_vector.push((full_name, name, model.path(used_iter).unwrap()));
 
-        if !model.iter_next(&used_iter) {
+        if !model.iter_next(used_iter) {
             break;
         }
 
-        let color = model.value(&used_iter, column_color).get::<String>().unwrap();
+        let color = model.value(used_iter, column_color).get::<String>().unwrap();
 
         if color == HEADER_ROW_COLOR {
             break;
@@ -458,7 +458,7 @@ fn move_iter(model: &gtk::TreeModel, tree_iter: &TreeIter, column_color: i32, go
             break;
         }
     }
-    tree_iter.clone()
+    *tree_iter
 }
 
 /// Populate bottom Scrolled View with small thumbnails
@@ -578,8 +578,8 @@ fn get_current_group_and_iter_from_selection(model: &TreeModel, selection: TreeS
     let selected_records = selection.selected_rows().0;
 
     let iter = model.iter_first().unwrap(); // Checking that treeview is not empty should be done before
-    header_clone = iter.clone(); // if nothing selected, use first group
-    possible_header = iter.clone(); // if nothing selected, use first group
+    header_clone = iter; // if nothing selected, use first group
+    possible_header = iter; // if nothing selected, use first group
     assert_eq!(model.value(&iter, column_color).get::<String>().unwrap(), HEADER_ROW_COLOR); // First element should be header
 
     if !selected_records.is_empty() {
@@ -591,11 +591,11 @@ fn get_current_group_and_iter_from_selection(model: &TreeModel, selection: TreeS
 
             if model.value(&iter, column_color).get::<String>().unwrap() == HEADER_ROW_COLOR {
                 possible_group += 1;
-                possible_header = iter.clone();
+                possible_header = iter;
             }
 
             if model.path(&iter).unwrap() == first_selected_record {
-                header_clone = possible_header.clone();
+                header_clone = possible_header;
                 current_group = possible_group;
             }
         }

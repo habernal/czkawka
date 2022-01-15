@@ -546,7 +546,7 @@ pub fn clean_invalid_headers(model: &gtk::ListStore, column_color: i32, column_p
                     panic!("First deleted element, should be a header"); // First element should be header
                 };
 
-                next_iter = current_iter.clone();
+                next_iter = current_iter;
                 if !model.iter_next(&next_iter) {
                     // There is only single header left (H1 -> END) -> (NOTHING)
                     vec_tree_path_to_delete.push(model.path(&current_iter).unwrap());
@@ -556,11 +556,11 @@ pub fn clean_invalid_headers(model: &gtk::ListStore, column_color: i32, column_p
                 if model.value(&next_iter, column_color).get::<String>().unwrap() == HEADER_ROW_COLOR {
                     // There are two headers each others(we remove just first) -> (H1 -> H2) -> (H2)
                     vec_tree_path_to_delete.push(model.path(&current_iter).unwrap());
-                    current_iter = next_iter.clone();
+                    current_iter = next_iter;
                     continue 'main;
                 }
 
-                next_next_iter = next_iter.clone();
+                next_next_iter = next_iter;
                 if !model.iter_next(&next_next_iter) {
                     // There is only one child of header left, so we remove it with header (H1 -> C1 -> END) -> (NOTHING)
                     vec_tree_path_to_delete.push(model.path(&current_iter).unwrap());
@@ -572,7 +572,7 @@ pub fn clean_invalid_headers(model: &gtk::ListStore, column_color: i32, column_p
                     // One child between two headers, we can remove them  (H1 -> C1 -> H2) -> (H2)
                     vec_tree_path_to_delete.push(model.path(&current_iter).unwrap());
                     vec_tree_path_to_delete.push(model.path(&next_iter).unwrap());
-                    current_iter = next_next_iter.clone();
+                    current_iter = next_next_iter;
                     continue 'main;
                 }
 
@@ -583,7 +583,7 @@ pub fn clean_invalid_headers(model: &gtk::ListStore, column_color: i32, column_p
                     }
                     // Move to next header
                     if model.value(&next_next_iter, column_color).get::<String>().unwrap() == HEADER_ROW_COLOR {
-                        current_iter = next_next_iter.clone();
+                        current_iter = next_next_iter;
                         continue 'main;
                     }
                 }
@@ -599,7 +599,7 @@ pub fn clean_invalid_headers(model: &gtk::ListStore, column_color: i32, column_p
                     panic!("First deleted element, should be a header"); // First element should be header
                 };
 
-                next_iter = current_iter.clone();
+                next_iter = current_iter;
                 if !model.iter_next(&next_iter) {
                     // There is only single header left (H1 -> END) -> (NOTHING)
                     vec_tree_path_to_delete.push(model.path(&current_iter).unwrap());
@@ -609,11 +609,11 @@ pub fn clean_invalid_headers(model: &gtk::ListStore, column_color: i32, column_p
                 if model.value(&next_iter, column_color).get::<String>().unwrap() == HEADER_ROW_COLOR {
                     // There are two headers each others(we remove just first) -> (H1 -> H2) -> (H2)
                     vec_tree_path_to_delete.push(model.path(&current_iter).unwrap());
-                    current_iter = next_iter.clone();
+                    current_iter = next_iter;
                     continue 'reference;
                 }
 
-                next_next_iter = next_iter.clone();
+                next_next_iter = next_iter;
                 if !model.iter_next(&next_next_iter) {
                     // There is only one child of header left, so we remove it with header (H1 -> C1 -> END) -> (NOTHING)
                     break 'reference;
@@ -621,7 +621,7 @@ pub fn clean_invalid_headers(model: &gtk::ListStore, column_color: i32, column_p
 
                 if model.value(&next_next_iter, column_color).get::<String>().unwrap() == HEADER_ROW_COLOR {
                     // One child between two headers, we can remove them  (H1 -> C1 -> H2) -> (H2)
-                    current_iter = next_next_iter.clone();
+                    current_iter = next_next_iter;
                     continue 'reference;
                 }
 
@@ -632,7 +632,7 @@ pub fn clean_invalid_headers(model: &gtk::ListStore, column_color: i32, column_p
                     }
                     // Move to next header
                     if model.value(&next_next_iter, column_color).get::<String>().unwrap() == HEADER_ROW_COLOR {
-                        current_iter = next_next_iter.clone();
+                        current_iter = next_next_iter;
                         continue 'reference;
                     }
                 }
